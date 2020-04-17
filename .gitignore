@@ -10,3 +10,4 @@ gen
 node_modules
 db.json
 .deploy.git
+public

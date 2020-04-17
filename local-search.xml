@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<search>
+  
+  
+  
+  <entry>
+    <title>Redux 简单使用</title>
+    <link href="/2020/04/17/redux%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/"/>
+    <url>/2020/04/17/redux%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/</url>
+    
+    <content type="html"><![CDATA[<h1 id="Redux"><a href="#Redux" class="headerlink" title="Redux"></a>Redux</h1><h2 id="Store"><a href="#Store" class="headerlink" title="Store"></a>Store</h2><p><strong>Store 就是保存数据的地方，你可以把它看成一个容器。整个应用只能有一个 Store</strong></p><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> store = createStore(counter);</code></pre><ol><li><p>state <code>const state = store.getState()</code></p><p>Redux 规定， 一个 State 对应一个 View。只要 State 相同，View 就相同。<br>你知道 State，就知道 View 是什么样，反之亦然。</p></li><li><p>dispatch</p><p>store.dispatch() 接受一个 Action 对象，将它分发出去</p></li><li><p>subscribe</p><p>Store 允许使用 store.subscribe 方法设置监听函数，一旦 State 发生变化，就自动执行这个函数。</p><p>store.subscribe 方法返回一个函数，调用这个函数就可以解除监听。</p></li></ol><h2 id="Actions"><a href="#Actions" class="headerlink" title="Actions"></a>Actions</h2><p><strong>描述发生了什么</strong></p><pre><code class="hljs plain">&#123;  type: &quot;ADD&quot;;&#125;</code></pre><h2 id="Reducers"><a href="#Reducers" class="headerlink" title="Reducers"></a>Reducers</h2><p><strong>Store 收到 Action 以后，必须给出一个新的 State，这样 View 才会发生变化。这种 State 的计算过程就叫做 Reducer。</strong></p><p><strong>Reducer 是一个函数，它接受 Action 和当前 State 作为参数，返回一个新的 State</strong></p><pre><code class="hljs javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">counter</span>(<span class="hljs-params">state = <span class="hljs-number">0</span>, action</span>) </span>&#123;  <span class="hljs-keyword">switch</span> (action.type) &#123;    <span class="hljs-keyword">case</span> <span class="hljs-string">"ADD"</span>:      <span class="hljs-keyword">return</span> state + <span class="hljs-number">1</span>;    <span class="hljs-keyword">case</span> <span class="hljs-string">"MINUS"</span>:      <span class="hljs-keyword">return</span> state - <span class="hljs-number">1</span>;    <span class="hljs-keyword">default</span>:      <span class="hljs-keyword">return</span> state;  &#125;&#125;</code></pre><h2 id="工作流程"><a href="#工作流程" class="headerlink" title="工作流程"></a>工作流程</h2><p>首先，用户发出 Action。</p><p><code>store.dispatch(action);</code></p><p>然后，Store 自动调用 Reducer，并且传入两个参数：当前 State 和收到的 Action。<br>Reducer 会返回新的 State 。</p><pre><code class="hljs javascript"><span class="hljs-keyword">let</span> nextState = counter(previousState, action);</code></pre><p>State 一旦有变化，Store 就会调用监听函数。</p><p>// 设置监听函数<br>结合 React 的 hooks 可以更新数据</p><pre><code class="hljs javascript"><span class="hljs-keyword">const</span> [number, setNumber] = useState(store.getState());store.subscribe(<span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> setNumber(store.getState()));</code></pre><p><a href="https://codesandbox.io/s/ts-redux-l2r9n?file=/src/App.tsx" target="_blank" rel="noopener">加减示例</a></p>]]></content>
+    
+    
+    
+    <tags>
+      
+      <tag>React Redux</tag>
+      
+    </tags>
+    
+  </entry>
+  
+  
+  
+  
+</search>

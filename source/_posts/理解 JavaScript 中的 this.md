@@ -1,4 +1,7 @@
-# 理解 JavaScript 中的 this
+---
+title: 理解 JavaScript 中的 this
+tags: JavaScript
+---
 ## 必知 
 > this 实际上是在函数被调用时发生的绑定，它指向哪里完全取决于函数在哪里被调用。
 ###  大提示: 不想看分析的可以直接拉到最后看结论。

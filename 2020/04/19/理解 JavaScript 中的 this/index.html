@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/ico.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="transparent">
+  <meta name="description" content="">
+  <meta name="author" content="fatfanfan">
+  <meta name="keywords" content="">
+  <title>理解 JavaScript 中的 this - fatfanfan</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>fatfanfan</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              Home</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              Archives</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              Categories</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              Tags</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-04-19 14:03">
+                    Sunday, April 19th 2020, 2:03 pm
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    1.2k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    14
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h2 id="必知"><a href="#必知" class="headerlink" title="必知"></a>必知</h2><blockquote>
+<p>this 实际上是在函数被调用时发生的绑定，它指向哪里完全取决于函数在哪里被调用。</p>
+</blockquote>
+<h3 id="大提示-不想看分析的可以直接拉到最后看结论。"><a href="#大提示-不想看分析的可以直接拉到最后看结论。" class="headerlink" title="大提示: 不想看分析的可以直接拉到最后看结论。"></a>大提示: 不想看分析的可以直接拉到最后看结论。</h3><h3 id="面试常见题"><a href="#面试常见题" class="headerlink" title="面试常见题"></a>面试常见题</h3><h4 id="第一题"><a href="#第一题" class="headerlink" title="第一题"></a>第一题</h4><pre><code class="hljs Javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>)</span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a)
+&#125;
+<span class="hljs-keyword">var</span> obj = &#123;
+  a :<span class="hljs-number">2</span>,
+  foo:foo
+&#125;
+<span class="hljs-keyword">var</span> bar = obj.foo
+obj.foo() 
+bar()</code></pre>
+<p>问： 最后两个打印出什么？</p>
+<h4 id="第二题"><a href="#第二题" class="headerlink" title="第二题"></a>第二题</h4><pre><code class="hljs Javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>)</span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a)
+&#125;
+<span class="hljs-keyword">var</span> obj = &#123;
+  a :<span class="hljs-number">2</span>,
+  foo:foo
+&#125;
+<span class="hljs-keyword">var</span> obj2 = &#123;
+  a:<span class="hljs-number">1</span>,
+  obj:obj
+&#125;
+<span class="hljs-keyword">var</span> obj3 = obj2.obj.foo
+obj2.obj.foo() <span class="hljs-comment">// 2</span>
+obj3() <span class="hljs-comment">//undefined</span></code></pre>
+
+<p>问： 最后两个打印出什么？<br>答？</p>
+<h2 id="我们如何理解-this-绑定的到底是谁？或者说-this-到底是谁？下面介绍四种方法"><a href="#我们如何理解-this-绑定的到底是谁？或者说-this-到底是谁？下面介绍四种方法" class="headerlink" title="我们如何理解 this 绑定的到底是谁？或者说 this 到底是谁？下面介绍四种方法"></a>我们如何理解 this 绑定的到底是谁？或者说 this 到底是谁？下面介绍四种方法</h2><h3 id="1-默认绑定"><a href="#1-默认绑定" class="headerlink" title="1. 默认绑定"></a>1. 默认绑定</h3><p> 什么是默认绑定呢？上代码先</p>
+<pre><code class="hljs Javascript"><span class="hljs-keyword">var</span> a = <span class="hljs-number">2</span>;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>)</span>&#123;
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a)
+&#125;
+<span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo2</span>(<span class="hljs-params"></span>)</span>&#123;
+<span class="hljs-meta">  'use strict'</span>
+  <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a)
+&#125;
+foo() <span class="hljs-comment">// 2</span>
+foo2() <span class="hljs-comment">//  TypeError: Cannot read property 'a' of undefined</span></code></pre>
+<ul>
+<li>在上面的代码中，「 foo() 直接使用时不带任何修饰的函数引用进行调用的 」，<br>因此只能使用「默认绑定」</li>
+<li>所以到 foo() 中的 this 绑定到「 全局对象 window 」，而「 严格模式 」时，全局对象无法被绑定，所以 this 绑定到  「undefined」</li>
+</ul>
+<p><strong>默认绑定总结：默认绑定即不带任何修饰的函数引用被调用时的绑定，此时 this 绑定到「 全局对象 window 」或者 「undefined」</strong></p>
+<h3 id="2-隐式绑定"><a href="#2-隐式绑定" class="headerlink" title="2. 隐式绑定"></a>2. 隐式绑定</h3><h4 id="隐式绑定是什么呢？隐式的绑定"><a href="#隐式绑定是什么呢？隐式的绑定" class="headerlink" title="隐式绑定是什么呢？隐式的绑定"></a>隐式绑定是什么呢？隐式的绑定</h4><blockquote>
+<p>当函数引用有上下文对象时，隐式绑定会把函数调用中的 this 绑定到这个上下文对象。</p>
+</blockquote>
+<p><strong>那么回到面试题</strong></p>
+<h4 id="2-1-面试题一"><a href="#2-1-面试题一" class="headerlink" title="2.1 面试题一"></a>2.1 面试题一</h4><pre><code class="hljs Javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>)</span>&#123; <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a)&#125;
+<span class="hljs-keyword">var</span> obj = &#123; <span class="hljs-attr">a</span> :<span class="hljs-number">2</span>,  <span class="hljs-attr">foo</span>:foo &#125;
+<span class="hljs-keyword">var</span> bar = obj.foo
+obj.foo() <span class="hljs-comment">//2</span>
+bar()  <span class="hljs-comment">// undefined</span></code></pre>
+<p>foo() 被调用时，落脚点指向 obj 对象（上下文对象），所以 this 绑定到 obj  ，this.a 即 obj.a , 所以打印出了 2</p>
+<p><strong>但是为什么 bar() 打印出了 <code>undefined</code> 呢？</strong></p>
+<p>虽然 bar 是 obj.foo 的引用，但实际上是 foo函数 本身的引用，所以此时 bar() 是不带任何修饰的函数调用，使用默认调用</p>
+<h4 id="2-2-面试题二"><a href="#2-2-面试题二" class="headerlink" title="2.2 面试题二"></a>2.2 面试题二</h4><pre><code class="hljs Javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>)</span>&#123; <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a)  &#125;
+<span class="hljs-keyword">var</span> obj = &#123;  <span class="hljs-attr">a</span> :<span class="hljs-number">2</span>,  <span class="hljs-attr">foo</span>:foo  &#125;
+<span class="hljs-keyword">var</span> obj2 = &#123;  <span class="hljs-attr">a</span>:<span class="hljs-number">1</span>,  <span class="hljs-attr">obj</span>:obj   &#125;
+<span class="hljs-keyword">var</span> obj3 = obj2.obj.foo
+obj2.obj.foo() <span class="hljs-comment">// 2</span>
+obj3() <span class="hljs-comment">//undefined</span></code></pre>
+<p>跟上面一题相同，虽然引用链比较长，但是最后 foo() 是在 obj 中被调用，所以 <code>this</code> 绑定到 obj ，引用链只有最后一层影响调用位置。</p>
+<h4 id="隐式绑定总结-：-函数在上下文对象中调用时，-this-绑定到-上下文对象上。"><a href="#隐式绑定总结-：-函数在上下文对象中调用时，-this-绑定到-上下文对象上。" class="headerlink" title="隐式绑定总结  ： 函数在上下文对象中调用时， this 绑定到 上下文对象上。"></a>隐式绑定总结  ： 函数在上下文对象中调用时， this 绑定到 上下文对象上。</h4><h3 id="3-显式绑定"><a href="#3-显式绑定" class="headerlink" title="3. 显式绑定"></a>3. 显式绑定</h3><blockquote>
+<p>使用「 call apply bind 」 进行绑定 this , this 绑定到第一个传入的参数</p>
+</blockquote>
+<p><a href="https://developer.mozilla.org/zh-CN/docs/Web/JavaScript/Reference/Global_Objects/Function/call#" target="_blank" rel="noopener">MDN三者的用法</a></p>
+<h4 id="3-1-call-的使用"><a href="#3-1-call-的使用" class="headerlink" title="3.1  call 的使用"></a>3.1  call 的使用</h4><p>回到面试题第一题，我们使用「 call 」进行显式绑定</p>
+<pre><code class="hljs Javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params"></span>)</span>&#123; <span class="hljs-built_in">console</span>.log(<span class="hljs-keyword">this</span>.a)  &#125;
+<span class="hljs-keyword">var</span> obj = &#123;
+  a :<span class="hljs-number">2</span>,
+  foo:foo
+&#125;
+<span class="hljs-keyword">var</span> bar =obj.foo
+obj.foo() <span class="hljs-comment">// 2</span>
+bar.call(obj) <span class="hljs-comment">//2</span></code></pre>
+<p>此时两者都打印出 2 ，因为我们将 this 绑定到 obj ，打印出的即是  //obj.a  //2</p>
+<h4 id="3-2-apply-绑定第一个参数是-this-二参是-一个数组"><a href="#3-2-apply-绑定第一个参数是-this-二参是-一个数组" class="headerlink" title="3.2 apply  绑定第一个参数是 this , 二参是 一个数组"></a>3.2 apply  绑定第一个参数是 this , 二参是 一个数组</h4><h4 id="3-3-bind-是-绑定第一个参数是-this"><a href="#3-3-bind-是-绑定第一个参数是-this" class="headerlink" title="3.3 bind 是 绑定第一个参数是 this"></a>3.3 bind 是 绑定第一个参数是 this</h4><h4 id="显式绑定总结-使用call-apply-bind-时，第一个参数是-this-，不传的话，默认为-undefined-。"><a href="#显式绑定总结-使用call-apply-bind-时，第一个参数是-this-，不传的话，默认为-undefined-。" class="headerlink" title="显式绑定总结: 使用call  apply bind 时，第一个参数是 this ，不传的话，默认为 undefined  。"></a>显式绑定总结: 使用call  apply bind 时，第一个参数是 this ，不传的话，默认为 undefined  。</h4><h3 id="4-new-绑定"><a href="#4-new-绑定" class="headerlink" title="4. new 绑定"></a>4. new 绑定</h3><h5 id="使用-new-来调用函数，-到底做了什么-？"><a href="#使用-new-来调用函数，-到底做了什么-？" class="headerlink" title="使用 new 来调用函数， 到底做了什么 ？"></a>使用 new 来调用函数， 到底做了什么 ？</h5><ul>
+<li><ol>
+<li>创建一个全新的对象</li>
+</ol>
+</li>
+<li><ol start="2">
+<li>这个新对象的<code>__proto__</code> 链接到 构造函数的 <code>prototype</code> </li>
+</ol>
+</li>
+<li><ol start="3">
+<li>这个新对象会绑定到函数调用的 this</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>如果函数没有返回其他对象，那么 new 表达式中的函数调用会自动返回这个新对象。<pre><code class="hljs Javascript"><span class="hljs-function"><span class="hljs-keyword">function</span> <span class="hljs-title">foo</span>(<span class="hljs-params">a</span>)</span>&#123;
+  <span class="hljs-keyword">this</span>.a = a 
+&#125;
+<span class="hljs-keyword">var</span> bar = <span class="hljs-keyword">new</span> foo(<span class="hljs-number">2</span>)
+
+<span class="hljs-built_in">console</span>.log(bar.a) <span class="hljs-comment">// 2</span></code></pre>
+分析： 使用 new 调用 foo() 时，我们构造一个对象并把它绑定到 foo() 调用的 <code>this</code> 上</li>
+</ol>
+</li>
+</ul>
+<p>####new 绑定总结：  new 绑定中 this 绑定的就是新生成的对象</p>
+<h2 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h2><p>1.「 箭头函数 」内的 <code>this</code> 就是外面的 <code>this</code>  ，外面的 <code>this</code> 是啥看下面四条</p>
+<p>2.「 <code>new</code> 绑定 」函数是否在 <code>new</code> 中调用 ？ 如果是 <code>this</code> 绑定的即是 新创建的对象。<br><code>var bar = new foo()</code></p>
+<p>3.「 显式绑定 」函数是否通过 call 、apply、 bind 绑定？<code>this</code> 绑定的时第一个参数<br><code>var bar = foo.call(obj)</code></p>
+<p>4.「 隐式绑定 」 函数是否在某个上下文中调用？ 是的话，<code>this</code> 绑定的是那个上下文对象<br><code>var bar =  obj.foo()</code></p>
+<p>5.「 默认绑定」如果都不是，那么就是默认绑定。严格模式绑定到 <code>undefined</code> ，否则绑定到 全局对象<br><code>var bar = foo()</code></p>
+<p><strong>后记</strong></p>
+<p>你要是看不懂我也没办法了，我的修为都在这了。。。。</p>
+<p>文章为个人总结，不足之处还请私信。</p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/JavaScript/">JavaScript</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/04/17/redux%20%E7%AE%80%E5%8D%95%E4%BD%BF%E7%94%A8/">
+                        <span class="hidden-mobile">Redux 简单使用</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "理解 JavaScript 中的 this&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

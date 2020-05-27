@@ -1,7 +1,7 @@
 ---
 title: 用 Node.js 写个命令行翻译工具, 发布到 npm
 date: 2020-05-27 17:17:32
-tags: node.js typescript
+tags:  [Node.js,typescript]
 ---
 
 ## 1. 初始化项目

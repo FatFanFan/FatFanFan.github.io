@@ -1,0 +1,728 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+
+
+
+<head>
+  <meta charset="UTF-8">
+  <link rel="apple-touch-icon" sizes="76x76" href="/img/apple-touch-icon.png">
+  <link rel="icon" type="image/png" href="/img/ico.png">
+  <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, shrink-to-fit=no">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  
+  <meta name="theme-color" content="transparent">
+  <meta name="description" content="">
+  <meta name="author" content="fatfanfan">
+  <meta name="keywords" content="">
+  <title>用 Node.js 写个命令行翻译工具, 发布到 npm - fatfanfan</title>
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/css/bootstrap.min.css" />
+<link  rel="stylesheet" href="https://cdn.staticfile.org/github-markdown-css/4.0.0/github-markdown.min.css" />
+
+
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/highlight.js/9.18.1/styles/github-gist.min.css" />
+
+
+<!-- 主题依赖的图标库，不要自行修改 -->
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1749284_fmb4a04yx8h.css">
+
+
+
+<link rel="stylesheet" href="//at.alicdn.com/t/font_1736178_ijqayz9ro8k.css">
+
+
+
+
+<link  rel="stylesheet" href="/css/main.css" />
+
+<!-- 自定义样式保持在最底部 -->
+
+
+<meta name="generator" content="Hexo 4.2.0"></head>
+
+
+<body>
+  <header style="height: 70vh;">
+    <nav id="navbar" class="navbar fixed-top  navbar-expand-lg navbar-dark scrolling-navbar">
+  <div class="container">
+    <a class="navbar-brand"
+       href="/">&nbsp;<strong>fatfanfan</strong>&nbsp;</a>
+
+    <button id="navbar-toggler-btn" class="navbar-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent"
+            aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+      <div class="animated-icon"><span></span><span></span><span></span></div>
+    </button>
+
+    <!-- Collapsible content -->
+    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+      <ul class="navbar-nav ml-auto text-center">
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/">
+              <i class="iconfont icon-home-fill"></i>
+              Home</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/archives/">
+              <i class="iconfont icon-archive-fill"></i>
+              Archives</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/categories/">
+              <i class="iconfont icon-category-fill"></i>
+              Categories</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/tags/">
+              <i class="iconfont icon-tags-fill"></i>
+              Tags</a>
+          </li>
+        
+          
+          
+          
+          <li class="nav-item">
+            <a class="nav-link" href="/about/">
+              <i class="iconfont icon-user-fill"></i>
+              About</a>
+          </li>
+        
+        
+          <li class="nav-item" id="search-btn">
+            <a class="nav-link" data-toggle="modal" data-target="#modalSearch">&nbsp;&nbsp;<i
+                class="iconfont icon-search"></i>&nbsp;&nbsp;</a>
+          </li>
+        
+      </ul>
+    </div>
+  </div>
+</nav>
+
+    <div class="view intro-2" id="background" parallax=true
+         style="background: url('/img/default.png') no-repeat center center;
+           background-size: cover;">
+      <div class="full-bg-img">
+        <div class="mask flex-center" style="background-color: rgba(0, 0, 0, 0.3)">
+          <div class="container text-center white-text fadeInUp">
+            <span class="h2" id="subtitle">
+              
+            </span>
+
+            
+              
+                <div class="mt-3 post-meta">
+                  <i class="iconfont icon-date-fill" aria-hidden="true"></i>
+                  <time datetime="2020-05-27 17:17">
+                    Wednesday, May 27th 2020, 5:17 pm
+                  </time>
+                </div>
+              
+
+              <div class="mt-1">
+                
+                  
+                  <span class="post-meta mr-2">
+                    <i class="iconfont icon-chart"></i>
+                    2.1k 字
+                  </span>
+                
+
+                
+                  
+                  <span class="post-meta mr-2">
+                      <i class="iconfont icon-clock-fill"></i>
+                    
+                    
+                    29
+                     分钟
+                  </span>
+                
+
+                
+              </div>
+            
+          </div>
+
+          
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    
+      
+
+<div class="container-fluid">
+  <div class="row">
+    <div class="d-none d-lg-block col-lg-2"></div>
+    <div class="col-lg-8 nopadding-md">
+      <div class="container nopadding-md" id="board-ctn">
+        <div class="py-5" id="board">
+          <div class="post-content mx-auto" id="post">
+            
+            <article class="markdown-body">
+              <h2 id="1-初始化项目"><a href="#1-初始化项目" class="headerlink" title="1. 初始化项目"></a>1. 初始化项目</h2><h3 id="1-1-项目环境配置"><a href="#1-1-项目环境配置" class="headerlink" title="1.1 项目环境配置"></a>1.1 项目环境配置</h3><ul>
+<li>创建一个空目录 <code>node_fanyi</code></li>
+<li>初始化 <code>yarn init -y</code></li>
+<li>全局安装 ts-node-dev <code>yarn global add ts-node-dev</code> ，<br>这个工具是用来支持 <code>typescript</code> 进行 <code>node</code> 开发</li>
+<li>全局安装 typescript <code>yarn global add typescript</code>，支持 ts 开发,<br>用于将 ts 编译成 js, 用于最后发布 <code>npm</code> 包</li>
+<li>用 webstorm 或 vscode 打开 <code>node_fanyi</code></li>
+<li>安装 node 声明文件 <code>yarn add --dev @types/node</code></li>
+</ul>
+<h3 id="1-2-环境测试"><a href="#1-2-环境测试" class="headerlink" title="1.2 环境测试"></a>1.2 环境测试</h3><ul>
+<li><p>在 <code>node_fanyi</code> 目录下 创建 <code>src/cli.ts</code> 并写入如下代码</p>
+  <pre><code class="hljs javascript"><span class="hljs-built_in">console</span>.log(<span class="hljs-string">"ts-node-dev can run"</span>)</code></pre></li>
+<li><p>命令行运行 <code>ts-node-dev  src/cli.ts</code> , 命令行打出  <code>ts-node-dev can run</code> </p>
+</li>
+<li><p>命令行运行  <code>tsc -v</code>  打印出 ts 的版本号</p>
+</li>
+</ul>
+<p><img src="https://user-gold-cdn.xitu.io/2020/5/27/1725412d49589ae0?w=573&h=156&f=png&s=10129" srcset="/img/loading.gif" alt=""></p>
+<h2 id="2-如何处理命令行参数"><a href="#2-如何处理命令行参数" class="headerlink" title="2. 如何处理命令行参数"></a>2. 如何处理命令行参数</h2><h3 id="2-1-commander-js"><a href="#2-1-commander-js" class="headerlink" title="2.1 commander.js"></a>2.1 commander.js</h3><blockquote>
+<p>commander.js , node.js 命令行接口的完整解决方案</p>
+</blockquote>
+<p>使用 commander.js 来快速进行命令行工具开发</p>
+<p><a href="https://github.com/tj/commander.js" target="_blank" rel="noopener">commander.js 文档</a></p>
+<pre><code class="hljs yarn">yarn add commander</code></pre>
+
+<h3 id="2-2-用法简介"><a href="#2-2-用法简介" class="headerlink" title="2.2 用法简介"></a>2.2 用法简介</h3><p>在 <code>node_fanyi</code> 下创建 <code>src/cli.js</code>, 引入 <code>commander</code></p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> commander <span class="hljs-keyword">from</span> <span class="hljs-string">"commander"</span>;
+<span class="hljs-keyword">const</span> program = <span class="hljs-keyword">new</span> commander.Command();
+
+program
+  .version(<span class="hljs-string">"0.0.1"</span>)
+  .name(<span class="hljs-string">"fy"</span>)
+  .usage(<span class="hljs-string">"&lt;English&gt;"</span>)
+  .arguments(<span class="hljs-string">"&lt;English&gt;"</span>)
+  .action(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">word</span>) </span>&#123;
+    <span class="hljs-built_in">console</span>.log(word);
+  &#125;);
+program.parse(process.argv);</code></pre>
+
+
+<ul>
+<li>version  参数-版本号 </li>
+<li>name  参数-使用的命令  </li>
+<li>usage 参数-可选/必选参数名</li>
+<li>arguments 参数-必传命令后的入参 </li>
+<li>action 参数-回调函数  </li>
+</ul>
+<p>运行 <code>ts-node-dev src/cli.ts -h</code></p>
+<p><img src="https://user-gold-cdn.xitu.io/2020/5/27/17254200ba5092dd?w=635&h=200&f=png&s=15537" srcset="/img/loading.gif" alt=""></p>
+<p>通过 action 可以拿到传入的参数, <code>ts-node-dev src/cli.ts add</code><br>命令行打印出传入的参数</p>
+<p><img src="https://user-gold-cdn.xitu.io/2020/5/27/1725422f113c452c?w=616&h=91&f=png&s=6542" srcset="/img/loading.gif" alt=""><br>在 <code>src</code> 中新建 <code>main.ts</code> 写入下面的代码</p>
+<pre><code class="hljs plain">export const translate &#x3D; (word: string) &#x3D;&gt; &#123;
+    console.log(word)
+    &#x2F;&#x2F; do something 这里用来将传入的 word 翻译之后打印出来
+&#125;</code></pre>
+
+<p>在 <code>src/cli.ts</code> 引入 , 在 <code>action</code> 的回调函数里调用 <code>translate</code> 函数</p>
+<pre><code class="hljs JavaScript"><span class="hljs-keyword">import</span> &#123; translate &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">"./main"</span>;
+
+program
+  .version(<span class="hljs-string">"0.0.1"</span>)
+  .name(<span class="hljs-string">"fy"</span>)
+  .usage(<span class="hljs-string">"&lt;English||中文&gt;"</span>)
+  .arguments(<span class="hljs-string">"&lt;English||中文&gt;"</span>)
+  .action(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">word</span>) </span>&#123;
+    translate(word);
+  &#125;);</code></pre>
+<p>下一步进行翻译函数的逻辑书写</p>
+<h2 id="3-翻译"><a href="#3-翻译" class="headerlink" title="3. 翻译"></a>3. 翻译</h2><h3 id="3-1-https-request-发送翻译请求"><a href="#3-1-https-request-发送翻译请求" class="headerlink" title="3.1 https.request 发送翻译请求"></a>3.1 https.request 发送翻译请求</h3><p>修改 <code>main.js</code> 代码如下,测试<code>https.request</code>能否发送 GET 请求</p>
+<pre><code class="hljs plain">import * as https from &quot;https&quot;;
+
+export const translate &#x3D; (word: string) &#x3D;&gt; &#123;
+  const options &#x3D; &#123;
+    hostname: &quot;www.baidu.com&quot;,
+    port: 443,
+    method: &quot;GET&quot;,
+  &#125;;
+
+  const request &#x3D; https.request(options, (response) &#x3D;&gt; &#123;
+    response.on(&quot;data&quot;, (chunk: Buffer) &#x3D;&gt; &#123;
+      console.log(chunk); 
+    &#125;);
+    response.on(&quot;end&quot;, () &#x3D;&gt; &#123;
+      console.log(&quot;end&quot;);
+    &#125;);
+  &#125;);
+
+  request.on(&quot;error&quot;, (e) &#x3D;&gt; &#123;
+    console.error(e);
+  &#125;);
+  request.end();
+&#125;;
+
+&#96;&#96;&#96; 
+命令行运行 &#96;ts-node-dev src&#x2F;cli.ts add&#96;，正确运行，会打印出 &#96;chunk&#96; &#96;end&#96;
+
+![](https:&#x2F;&#x2F;user-gold-cdn.xitu.io&#x2F;2020&#x2F;5&#x2F;27&#x2F;17254d5d1da5775d?w&#x3D;1390&amp;h&#x3D;336&amp;f&#x3D;png&amp;s&#x3D;46980)
+进行到这里我们只需要接入翻译 API，使用 API 翻译拿到的命令行参数就可以了
+### 3.2 翻译 API 获取与使用
+
+#### 3.2.1 获取
+你可以使用百度翻译或有道翻译的API，我选择了百度翻译的API，你可以自己选择使用哪个。
+
+[百度翻译](https:&#x2F;&#x2F;api.fanyi.baidu.com&#x2F;)
+[有道翻译](http:&#x2F;&#x2F;fanyi.youdao.com&#x2F;openapi)
+
+在官网进行登录过之后，点击产品服务，通用翻译 API, 点击立即使用，一般使用标准版就足够
+
+![](https:&#x2F;&#x2F;user-gold-cdn.xitu.io&#x2F;2020&#x2F;5&#x2F;27&#x2F;17254e07cc7ef143?w&#x3D;1310&amp;h&#x3D;755&amp;f&#x3D;png&amp;s&#x3D;88500)
+
+点击接入文档，里面有接口、输入参数、返回值、语言列表、错误码、查看接入举例
+
+**注意 不要泄露你的 appid 以及 appSecret**
+
+查询参数
+&#96;&#96;&#96;Javascript
+ &#x2F;**
+   * salt 随机数
+   * sign 文档中生成签名的方式 appSecret 可以在开发者信息中看到
+   * 使用 querystring.stringify() 把这些查询参数拼接成字符串
+   * appid  在开发者信息里可以看到
+   *&#x2F;    
+  const salt &#x3D; Math.random();
+  const sign &#x3D; md5(appId + word + salt + appSecret);
+  const query &#x3D; querystring.stringify(&#123;
+    q: word, &#x2F;&#x2F; 需要查询的单词
+    appid: appId,
+    salt,  &#x2F;&#x2F; 随机数
+    sign, &#x2F;&#x2F; 生成的签名
+    from:&quot;en&quot;, &#x2F;&#x2F; 输入的语言
+    to:&quot;zh&quot;,  &#x2F;&#x2F; 输出的语言
+  &#125;);</code></pre>
+<p>接口  文档中的接口</p>
+<pre><code class="hljs plain">const options &#x3D; &#123;
+  hostname: &quot;api.fanyi.baidu.com&quot;,
+  port: 443,
+  path: &quot;&#x2F;api&#x2F;trans&#x2F;vip&#x2F;translate?&quot; + query, 
+  &#x2F;&#x2F; query 即为上文的参训参数生成的 query
+  method: &quot;GET&quot;,
+&#125;;</code></pre>
+<h4 id="3-2-2-使用-API"><a href="#3-2-2-使用-API" class="headerlink" title="3.2.2 使用 API"></a>3.2.2 使用 API</h4><p>新建 <code>src/private.ts</code> 写入代码并将这个文件加入到 <code>.gitignore</code> </p>
+<pre><code class="hljs javascript"><span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> appId = <span class="hljs-string">""</span>; <span class="hljs-comment">// 你申请的 appid</span>
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> appSecret = <span class="hljs-string">""</span>; <span class="hljs-comment">// 你申请的 appSecret</span></code></pre>
+<p>在 <code>mian.js</code> 中引入 <code>private.ts</code><br>安装 md5 以及其声明文件 <code>yarn add md5</code> <code>yarn add --dev @types/md5</code></p>
+<p><code>main.ts</code> 完整代码<br><a href="https://github.com/fatfanfan/node_fanyi" target="_blank" rel="noopener">命令行翻译 源代码</a>  </p>
+<pre><code class="hljs typescript"><span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> https <span class="hljs-keyword">from</span> <span class="hljs-string">"https"</span>;
+<span class="hljs-keyword">import</span> * <span class="hljs-keyword">as</span> querystring <span class="hljs-keyword">from</span> <span class="hljs-string">"querystring"</span>;
+<span class="hljs-keyword">import</span> &#123; appId, appSecret &#125; <span class="hljs-keyword">from</span> <span class="hljs-string">"./private"</span>;
+<span class="hljs-keyword">import</span> md5 <span class="hljs-keyword">from</span> <span class="hljs-string">"md5"</span>;
+
+<span class="hljs-keyword">type</span> ErrorMap = &#123;
+  [key: <span class="hljs-built_in">string</span>]: <span class="hljs-built_in">string</span>;
+&#125;;
+<span class="hljs-keyword">const</span> errorMap: ErrorMap = &#123;
+  <span class="hljs-number">52003</span>: <span class="hljs-string">"用户认证失败"</span>,
+  <span class="hljs-number">54001</span>: <span class="hljs-string">"签名错误"</span>,
+  <span class="hljs-number">54004</span>: <span class="hljs-string">"账户余额不足"</span>,
+&#125;;
+
+<span class="hljs-keyword">type</span> BaiduResult = &#123;
+  error_code?: <span class="hljs-built_in">string</span>;
+  error_msg?: <span class="hljs-built_in">string</span>;
+  <span class="hljs-keyword">from</span>: <span class="hljs-built_in">string</span>;
+  to: <span class="hljs-built_in">string</span>;
+  trans_result: &#123; src: <span class="hljs-built_in">string</span>; dst: <span class="hljs-built_in">string</span> &#125;[];
+&#125;;
+
+<span class="hljs-keyword">export</span> <span class="hljs-keyword">const</span> translate = <span class="hljs-function">(<span class="hljs-params">word: <span class="hljs-built_in">string</span></span>) =&gt;</span> &#123;
+  <span class="hljs-keyword">const</span> salt = <span class="hljs-built_in">Math</span>.random();
+  <span class="hljs-keyword">const</span> sign = md5(appId + word + salt + appSecret);
+  <span class="hljs-keyword">let</span> <span class="hljs-keyword">from</span>, to;
+  <span class="hljs-comment">// 判断输入的是中文/英文</span>
+  <span class="hljs-keyword">if</span> (<span class="hljs-regexp">/[a-zA-Z]/</span>.test(word[<span class="hljs-number">0</span>])) &#123;
+    <span class="hljs-keyword">from</span> = <span class="hljs-string">"en"</span>;
+    to = <span class="hljs-string">"zh"</span>;
+  &#125; <span class="hljs-keyword">else</span> &#123;
+    <span class="hljs-keyword">from</span> = <span class="hljs-string">"zh"</span>;
+    to = <span class="hljs-string">"en"</span>;
+  &#125;
+  <span class="hljs-keyword">const</span> query = querystring.stringify(&#123;
+    q: word,
+    appid: appId,
+    salt,
+    sign,
+    <span class="hljs-keyword">from</span>,
+    to,
+  &#125;);
+
+  <span class="hljs-keyword">const</span> options = &#123;
+    hostname: <span class="hljs-string">"api.fanyi.baidu.com"</span>,
+    port: <span class="hljs-number">443</span>,
+    path: <span class="hljs-string">"/api/trans/vip/translate?"</span> + query,
+    method: <span class="hljs-string">"GET"</span>,
+  &#125;;
+
+  <span class="hljs-keyword">const</span> request = https.request(options, <span class="hljs-function">(<span class="hljs-params">response</span>) =&gt;</span> &#123;
+    <span class="hljs-comment">//监听data 事件， 有返回值就放到 chunks 中</span>
+    <span class="hljs-keyword">let</span> chunks: Buffer[] = [];
+    response.on(<span class="hljs-string">"data"</span>, <span class="hljs-function">(<span class="hljs-params">chunk: Buffer</span>) =&gt;</span> &#123;
+      chunks.push(chunk);
+    &#125;);
+    <span class="hljs-comment">// end 之后，将获取到的 chunks 转换成 我们熟悉的 object</span>
+    <span class="hljs-comment">// 然后对对象进行解析，判断成功或者失败</span>
+    <span class="hljs-comment">// 失败打印出 errMsg</span>
+    <span class="hljs-comment">// 成功就在命令行中打印出翻译后的结果</span>
+    response.on(<span class="hljs-string">"end"</span>, <span class="hljs-function"><span class="hljs-params">()</span> =&gt;</span> &#123;
+      <span class="hljs-keyword">const</span> <span class="hljs-built_in">string</span> = Buffer.concat(chunks).toString();
+      <span class="hljs-keyword">const</span> object: BaiduResult = <span class="hljs-built_in">JSON</span>.parse(<span class="hljs-built_in">string</span>);
+      <span class="hljs-keyword">if</span> (object.error_code) &#123;
+        <span class="hljs-built_in">console</span>.error(errorMap[object.error_code] || object.error_msg);
+        process.exit(<span class="hljs-number">2</span>);
+      &#125; <span class="hljs-keyword">else</span> &#123;
+        object.trans_result.map(<span class="hljs-function">(<span class="hljs-params">obj</span>) =&gt;</span> &#123;
+          <span class="hljs-built_in">console</span>.log(obj.dst);
+        &#125;);
+        process.exit(<span class="hljs-number">0</span>);
+      &#125;
+    &#125;);
+  &#125;);
+  request.on(<span class="hljs-string">"error"</span>, <span class="hljs-function">(<span class="hljs-params">e</span>) =&gt;</span> &#123;
+    <span class="hljs-built_in">console</span>.error(e);
+  &#125;);
+  request.end();
+&#125;;</code></pre>
+<p>运行 <code>ts-node-dev src/cli.ts add</code> </p>
+<p><code>ts-node-dev src/cli.ts 成功</code></p>
+<p>示例如下<br><img src="https://user-gold-cdn.xitu.io/2020/5/27/1725513657c3b374?w=627&h=184&f=png&s=13883" srcset="/img/loading.gif" alt=""></p>
+<p>基本上到这里就结束了，如果你想发布到 npm ，请继续</p>
+<h2 id="4-发布到-npm"><a href="#4-发布到-npm" class="headerlink" title="4. 发布到 npm"></a>4. 发布到 npm</h2><h3 id="4-1-注册-npm"><a href="#4-1-注册-npm" class="headerlink" title="4.1 注册 npm"></a>4.1 注册 npm</h3><p><a href="https://www.npmjs.com/" target="_blank" rel="noopener">npm 官网</a><br>自己去注册</p>
+<h3 id="4-2-将-ts-转换-js"><a href="#4-2-将-ts-转换-js" class="headerlink" title="4.2 将 ts 转换 js"></a>4.2 将 ts 转换 js</h3><ul>
+<li>命令行运行 <code>tsc -- init</code> 生成 <code>tsconfig.json</code>文件</li>
+<li>修改 tsconfig.json 文件中的  “outDir”: “dist/“   // tsc 编译 ts 生成 js 的文件夹</li>
+<li>运行 <code>tsc</code> 生成 dist 目录以及 ts 文件对应的 js 文件 </li>
+<li>将 <code>dist/private.js</code> 加入到 <code>.gitignore</code></li>
+</ul>
+<h3 id="4-3-修改-package-json"><a href="#4-3-修改-package-json" class="headerlink" title="4.3 修改 package.json"></a>4.3 修改 package.json</h3><p>最终代码在最后的源码链接中</p>
+<pre><code class="hljs plain">&#123;
+  &quot;name&quot;: &quot;node_fanyi&quot;,  &#x2F;&#x2F; 你的 npm 包的名称 注意可能出现与别人的包重名 换一个就好了
+  &quot;version&quot;: &quot;0.0.1&quot;,    &#x2F;&#x2F; 你的包的版本 每次发布都要改版
+  &quot;main&quot;: &quot;dist&#x2F;main.js&quot;, &#x2F;&#x2F; 加载的入口文件 
+  &quot;bin&quot;: &#123;               &#x2F;&#x2F; 指定各个内部命令对应的可执行文件的位置
+    &quot;fy&quot;: &quot;dist&#x2F;cli.js&quot;   &#x2F;&#x2F; 默认的命令 fy 
+  &#125;,
+  &quot;files&quot;: [             &#x2F;&#x2F; 要上传的文件
+    &quot;dist&#x2F;**&#x2F;*.js&quot;
+  ],
+&#125;</code></pre>
+
+<h3 id="4-4-生成代码并发布"><a href="#4-4-生成代码并发布" class="headerlink" title="4.4 生成代码并发布"></a>4.4 生成代码并发布</h3><ul>
+<li><ol>
+<li>运行 <code>tsc</code>  每次发布前都要运行 <code>tsc</code> 重新生成 <code>dist</code></li>
+</ol>
+</li>
+<li><ol start="2">
+<li>npm 换成官方源，非官方源不能发布 依次运行 <code>npm install nrm -g</code>   <code>nrm use npm</code></li>
+</ol>
+</li>
+<li><ol start="3">
+<li>运行 <code>npm adduser</code>  登录 npm ,根据提示填写「 username password email 」</li>
+</ol>
+</li>
+<li><ol start="4">
+<li>运行 <code>npm publish</code>  发布代码</li>
+</ol>
+</li>
+</ul>
+<h2 id="5-可能出现的问题以及其他提示"><a href="#5-可能出现的问题以及其他提示" class="headerlink" title="5. 可能出现的问题以及其他提示"></a>5. 可能出现的问题以及其他提示</h2><ol>
+<li><p>你没用过 ts ？</p>
+<p> 把 ts 后缀改为 js 就好了，去掉声明</p>
+</li>
+<li><p>代码报错？</p>
+<p> 把源代码复制到你的代码中，看看能不能跑起来</p>
+</li>
+<li><p>发布不成功?</p>
+<p> 没换官方源</p>
+<p> version 没修改版本号</p>
+<p> name 跟别人已发布的相同</p>
+</li>
+</ol>
+<ol start="4">
+<li><p>其他 ?</p>
+<p> 我也不知道了。。。有其他问题联系我吧</p>
+</li>
+</ol>
+<h2 id="6-安全问题以及其他"><a href="#6-安全问题以及其他" class="headerlink" title="6. 安全问题以及其他"></a>6. 安全问题以及其他</h2><ol>
+<li><p>不要暴露 appid 以及 appSecret 不然别人可以用你的 appid 和 appSecret 干些其他的，尽量只开通标准版</p>
+</li>
+<li><p>目前只有简单的单个单词和中文句子的翻译，后续可能还会加功能。。。</p>
+</li>
+<li><p>体验我已经发布的命令行翻译工具 如果不行就是我已经停用我的百度翻译API 服务了</p>
+</li>
+</ol>
+<pre><code class="hljs plain">npm install fanyi-f -g</code></pre>
+<pre><code class="hljs plain">fy add</code></pre>
+
+<h2 id="7-源码"><a href="#7-源码" class="headerlink" title="7. 源码"></a>7. 源码</h2><p><a href="https://github.com/fatfanfan/node_fanyi" target="_blank" rel="noopener">命令行翻译 源代码</a>    </p>
+<p>后记</p>
+<p>文章为个人总结，不足之处还请留言或私信。</p>
+<p>转载请注明出处。</p>
+<p>以上。    </p>
+
+            </article>
+            <hr>
+            <div>
+              <div class="post-metas mb-3">
+                
+                
+                  <div class="post-meta">
+                    <i class="iconfont icon-tags"></i>
+                    
+                      <a class="hover-with-bg" href="/tags/node-js-typescript/">node.js typescript</a>
+                    
+                  </div>
+                
+              </div>
+              
+                <p class="note note-warning">本博客所有文章除特别声明外，均采用 <a href="https://zh.wikipedia.org/wiki/Wikipedia:CC_BY-SA_3.0%E5%8D%8F%E8%AE%AE%E6%96%87%E6%9C%AC" target="_blank" rel="nofollow noopener noopener">CC BY-SA 3.0协议</a> 。转载请注明出处！</p>
+              
+              
+                <div class="post-prevnext row">
+                  <div class="post-prev col-6">
+                    
+                    
+                  </div>
+                  <div class="post-next col-6">
+                    
+                    
+                      <a href="/2020/05/27/%E7%90%86%E8%A7%A3%20JavaScript%20%E4%B8%AD%E7%9A%84%20this/">
+                        <span class="hidden-mobile">理解 JavaScript 中的 this</span>
+                        <span class="visible-mobile">下一篇</span>
+                        <i class="iconfont icon-arrowright"></i>
+                      </a>
+                    
+                  </div>
+                </div>
+              
+            </div>
+
+            
+          </div>
+        </div>
+      </div>
+    </div>
+    
+      <div class="d-none d-lg-block col-lg-2 toc-container" id="toc-ctn">
+        <div id="toc">
+  <p class="toc-header"><i class="iconfont icon-list"></i>&nbsp;TOC</p>
+  <div id="tocbot"></div>
+</div>
+
+      </div>
+    
+  </div>
+</div>
+
+<!-- Custom -->
+
+
+    
+  </main>
+
+  
+    <a id="scroll-top-button" href="#" role="button">
+      <i class="iconfont icon-arrowup" aria-hidden="true"></i>
+    </a>
+  
+
+  
+    <div class="modal fade" id="modalSearch" tabindex="-1" role="dialog" aria-labelledby="ModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog modal-dialog-scrollable modal-lg" role="document">
+    <div class="modal-content">
+      <div class="modal-header text-center">
+        <h4 class="modal-title w-100 font-weight-bold">Search</h4>
+        <button type="button" id="local-search-close" class="close" data-dismiss="modal" aria-label="Close">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div class="modal-body mx-3">
+        <div class="md-form mb-5">
+          <input type="text" id="local-search-input" class="form-control validate">
+          <label data-error="x" data-success="v"
+                 for="local-search-input">keyword</label>
+        </div>
+        <div class="list-group" id="local-search-result"></div>
+      </div>
+    </div>
+  </div>
+</div>
+  
+
+  
+
+  
+
+  <footer class="mt-5">
+  <div class="text-center py-3">
+    <div>
+      <a href="https://hexo.io" target="_blank" rel="nofollow noopener"><span>Hexo</span></a>
+      <i class="iconfont icon-love"></i>
+      <a href="https://github.com/fluid-dev/hexo-theme-fluid" target="_blank" rel="nofollow noopener">
+        <span>Fluid</span></a>
+    </div>
+    
+
+    
+
+    
+  </div>
+</footer>
+
+<!-- SCRIPTS -->
+<script  src="https://cdn.staticfile.org/jquery/3.4.1/jquery.min.js" ></script>
+<script  src="https://cdn.staticfile.org/twitter-bootstrap/4.4.1/js/bootstrap.min.js" ></script>
+<script  src="/js/main.js" ></script>
+
+
+  <script  src="/js/lazyload.js" ></script>
+
+
+
+  
+  <script  src="https://cdn.staticfile.org/tocbot/4.11.1/tocbot.min.js" ></script>
+  <script>
+    $(document).ready(function () {
+      var boardCtn = $('#board-ctn');
+      var boardTop = boardCtn.offset().top;
+
+      tocbot.init({
+        tocSelector: '#tocbot',
+        contentSelector: '.post-content',
+        headingSelector: 'h1,h2,h3,h4,h5,h6',
+        linkClass: 'tocbot-link',
+        activeLinkClass: 'tocbot-active-link',
+        listClass: 'tocbot-list',
+        isCollapsedClass: 'tocbot-is-collapsed',
+        collapsibleClass: 'tocbot-is-collapsible',
+        collapseDepth: 0,
+        scrollSmooth: true,
+        headingsOffset: -boardTop
+      });
+      if ($('.toc-list-item').length > 0) {
+        $('#toc').css('visibility', 'visible');
+      }
+    });
+  </script>
+
+
+
+
+
+  <script defer src="https://cdn.staticfile.org/clipboard.js/2.0.6/clipboard.min.js" ></script>
+  <script  src="/js/clipboard-use.js" ></script>
+
+
+
+
+
+
+<!-- Plugins -->
+
+
+
+  <script  src="https://cdn.staticfile.org/typed.js/2.0.11/typed.min.js" ></script>
+  <script>
+    var typed = new Typed('#subtitle', {
+      strings: [
+        '  ',
+        "用 Node.js 写个命令行翻译工具, 发布到 npm&nbsp;",
+      ],
+      cursorChar: "_",
+      typeSpeed: 70,
+      loop: false,
+    });
+    typed.stop();
+    $(document).ready(function () {
+      $(".typed-cursor").addClass("h2");
+      typed.start();
+    });
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/anchor-js/4.2.2/anchor.min.js" ></script>
+  <script>
+    anchors.options = {
+      placement: "right",
+      visible: "hover",
+      
+    };
+    var el = "h1,h2,h3,h4,h5,h6".split(",");
+    var res = [];
+    for (item of el) {
+      res.push(".markdown-body > " + item)
+    }
+    anchors.add(res.join(", "))
+  </script>
+
+
+
+  <script  src="/js/local-search.js" ></script>
+  <script>
+    var path = "/local-search.xml";
+    var inputArea = document.querySelector("#local-search-input");
+    inputArea.onclick = function () {
+      getSearchFile(path);
+      this.onclick = null
+    }
+  </script>
+
+
+
+  <script  src="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.js" ></script>
+  <link  rel="stylesheet" href="https://cdn.staticfile.org/fancybox/3.5.7/jquery.fancybox.min.css" />
+
+  <script>
+    $('#post img:not(.no-zoom img, img[no-zoom]), img[zoom]').each(
+      function () {
+        var element = document.createElement('a');
+        $(element).attr('data-fancybox', 'images');
+        $(element).attr('href', $(this).attr('src'));
+        $(this).wrap(element);
+      }
+    );
+  </script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</body>
+</html>

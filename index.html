@@ -157,6 +157,89 @@
     
     
     <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/2020/07/19/EventHub/">手写 EventHub</a>
+
+      <a href="/2020/07/19/EventHub/" class="index-excerpt">
+        
+        
+          
+        
+        <div>eventHub ts 实现API: on emit off
+const EventHub = &#123;
+  cache: &#123;&#125;,
+  on(eventName: string, fn: EventHubFn) &#123;
+    this.cache[eventName] = this.cache[eventName] || [];
+    this.cache[eve</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-19
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/JavaScript/">JavaScript</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
+      <a class="index-header" href="/2020/07/19/%E7%90%86%E8%A7%A3%20JavaScript%20%E4%B8%AD%E7%9A%84%20this/">理解 JavaScript 中的 this</a>
+
+      <a href="/2020/07/19/%E7%90%86%E8%A7%A3%20JavaScript%20%E4%B8%AD%E7%9A%84%20this/" class="index-excerpt">
+        
+        
+          
+        
+        <div>必知
+this 实际上是在函数被调用时发生的绑定，它指向哪里完全取决于函数在哪里被调用。
+
+大提示: 不想看分析的可以直接拉到最后看结论。面试常见题第一题function foo()&#123;
+  console.log(this.a)
+&#125;
+var obj = &#123;
+  a :2,
+  foo:foo
+&#125;
+var bar = obj.foo
+obj.foo() 
+ba</div>
+      </a>
+
+      <div class="index-btm post-metas">
+        
+          <div class="post-meta mr-3">
+            <i class="iconfont icon-date"></i>&nbsp;2020-07-19
+          </div>
+        
+        
+        
+          <div class="post-meta">
+            <i class="iconfont icon-tags"></i>
+            
+              <a href="/tags/JavaScript/">JavaScript</a>
+            
+          </div>
+        
+      </div>
+    </div>
+  </div>
+
+  <div class="row mx-auto index-card">
+    
+    
+    <div class="col-12 col-md-12 mx-auto index-info">
       <a class="index-header" href="/2020/05/27/fanyi/">用 Node.js 写个命令行翻译工具, 发布到 npm</a>
 
       <a href="/2020/05/27/fanyi/" class="index-excerpt">
@@ -185,51 +268,6 @@
               <a href="/tags/Node-js/">Node.js</a>
             
               <a href="/tags/typescript/">typescript</a>
-            
-          </div>
-        
-      </div>
-    </div>
-  </div>
-
-  <div class="row mx-auto index-card">
-    
-    
-    <div class="col-12 col-md-12 mx-auto index-info">
-      <a class="index-header" href="/2020/05/27/%E7%90%86%E8%A7%A3%20JavaScript%20%E4%B8%AD%E7%9A%84%20this/">理解 JavaScript 中的 this</a>
-
-      <a href="/2020/05/27/%E7%90%86%E8%A7%A3%20JavaScript%20%E4%B8%AD%E7%9A%84%20this/" class="index-excerpt">
-        
-        
-          
-        
-        <div>必知
-this 实际上是在函数被调用时发生的绑定，它指向哪里完全取决于函数在哪里被调用。
-
-大提示: 不想看分析的可以直接拉到最后看结论。面试常见题第一题function foo()&#123;
-  console.log(this.a)
-&#125;
-var obj = &#123;
-  a :2,
-  foo:foo
-&#125;
-var bar = obj.foo
-obj.foo() 
-ba</div>
-      </a>
-
-      <div class="index-btm post-metas">
-        
-          <div class="post-meta mr-3">
-            <i class="iconfont icon-date"></i>&nbsp;2020-05-27
-          </div>
-        
-        
-        
-          <div class="post-meta">
-            <i class="iconfont icon-tags"></i>
-            
-              <a href="/tags/JavaScript/">JavaScript</a>
             
           </div>
         
